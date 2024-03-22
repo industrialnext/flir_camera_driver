@@ -109,7 +109,7 @@ example_parameters = {
 
 def launch_setup(context, *args, **kwargs):
     """Launch camera driver node."""
-    parameter_path = LaunchConfig('set_parameter_file').perform(context)
+    set_camera_parameter_path = LaunchConfig('set_parameter_file').perform(context)
     parameter_file = LaunchConfig('parameter_file').perform(context)
     camera_type = LaunchConfig('camera_type').perform(context)
     if not parameter_file:
@@ -117,19 +117,19 @@ def launch_setup(context, *args, **kwargs):
             [FindPackageShare('spinnaker_camera_driver'), 'config',
              camera_type + '.yaml'])
         
-    if parameter_path:
-        with open(parameter_path, 'r') as file:
-            set_parameter_file = yaml.safe_load(file)
+    if set_camera_parameter_path:
+        with open(set_camera_parameter_path, 'r') as parameter_path:
+            camera_parameters = yaml.safe_load(parameter_path)
     else:
         if camera_type not in example_parameters:
             raise Exception('no example parameters available for type ' + camera_type)
-        set_parameter_file = example_parameters[camera_type]
+        camera_parameters = example_parameters[camera_type]
 
     node = Node(package='spinnaker_camera_driver',
                 executable='camera_driver_node',
                 output='screen',
                 name=[LaunchConfig('camera_name')],
-                parameters=[set_parameter_file,
+                parameters=[camera_parameters,
                             {'ffmpeg_image_transport.encoding': 'hevc_nvenc',
                              'parameter_file': parameter_file,
                              'serial_number': [LaunchConfig('serial')]}],
