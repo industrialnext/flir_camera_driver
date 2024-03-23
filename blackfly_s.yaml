@@ -3,7 +3,7 @@ compute_brightness: False
 adjust_timestamp: True
 dump_node_map: False
 gain_auto: "Continuous"
-pixel_format: "BayerRG8"   # Some formats are e.g. "Mono8", "BayerRG8", "BGR8", "BayerRG16"
+pixel_format: "BayerRG8"   # Check available values with SpinView. Not all are supported by ROS! Some formats are e.g. "Mono8", "BayerRG8", "BGR8", "BayerRG16"
 exposure_auto: "Off"
 exposure_time: 200000
 frame_rate_auto: "Off"
