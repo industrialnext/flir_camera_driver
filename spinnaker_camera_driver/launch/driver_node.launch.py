@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 #
+import yaml
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument as LaunchArg
@@ -108,20 +109,27 @@ example_parameters = {
 
 def launch_setup(context, *args, **kwargs):
     """Launch camera driver node."""
+    set_camera_parameter_path = LaunchConfig('set_parameter_file').perform(context)
     parameter_file = LaunchConfig('parameter_file').perform(context)
     camera_type = LaunchConfig('camera_type').perform(context)
     if not parameter_file:
         parameter_file = PathJoinSubstitution(
             [FindPackageShare('spinnaker_camera_driver'), 'config',
              camera_type + '.yaml'])
-    if camera_type not in example_parameters:
-        raise Exception('no example parameters available for type ' + camera_type)
+        
+    if set_camera_parameter_path:
+        with open(set_camera_parameter_path, 'r') as parameter_path:
+            camera_parameters = yaml.safe_load(parameter_path)
+    else:
+        if camera_type not in example_parameters:
+            raise Exception('no example parameters available for type ' + camera_type)
+        camera_parameters = example_parameters[camera_type]
 
     node = Node(package='spinnaker_camera_driver',
                 executable='camera_driver_node',
                 output='screen',
                 name=[LaunchConfig('camera_name')],
-                parameters=[example_parameters[camera_type],
+                parameters=[camera_parameters,
                             {'ffmpeg_image_transport.encoding': 'hevc_nvenc',
                              'parameter_file': parameter_file,
                              'serial_number': [LaunchConfig('serial')]}],
@@ -139,6 +147,8 @@ def generate_launch_description():
                   description='type of camera (blackfly_s, chameleon...)'),
         LaunchArg('serial', default_value="'20435008'",
                   description='FLIR serial number of camera (in quotes!!)'),
+        LaunchArg('set_parameter_file', default_value='',
+                  description='path to ros parameter file'),
         LaunchArg('parameter_file', default_value='',
                   description='path to ros parameter definition file (override camera type)'),
         OpaqueFunction(function=launch_setup)
