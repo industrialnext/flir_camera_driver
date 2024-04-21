@@ -116,7 +116,7 @@ def launch_setup(context, *args, **kwargs):
         parameter_file = PathJoinSubstitution(
             [FindPackageShare('spinnaker_camera_driver'), 'config',
              camera_type + '.yaml'])
-        
+
     if set_camera_parameter_path:
         with open(set_camera_parameter_path, 'r') as parameter_path:
             camera_parameters = yaml.safe_load(parameter_path)
