@@ -11,7 +11,8 @@ exposure_time: 250000
 frame_rate_auto: "Off"
 frame_rate: 5.0
 frame_rate_enable: True
-buffer_queue_size: 10
+buffer_queue_size: 1
+image_queue_size: 1
 trigger_mode: "Off"
 chunk_mode_active: True
 chunk_selector_frame_id: "FrameID"
